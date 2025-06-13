@@ -13,11 +13,15 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.Damageable;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CropBreakEvent implements Listener {
+
+  private static final float RARE_EVENT_CHANCE = 0.05f; // Chance to immediately grow a crop after harvest
+  private static final float EXTRA_SEED_CHANCE = 0.5f;
 
   // a crop matrix that reads [crop type, primary drop, seed drop]
   private enum CropInfo {
@@ -68,12 +72,16 @@ public class CropBreakEvent implements Listener {
    */
   @EventHandler
   public void onCropBreak(BlockBreakEvent breakEvent) {
+    // Early return if we're still on cooldown
+    if (CooldownManager.tryCancel(breakEvent)) {
+      return;
+    }
     Player player = breakEvent.getPlayer();
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
     // Prevent unauthorized block breaking behavior
     if (!player.hasPermission(FarmPerms.BREAK) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
-      breakEvent.setCancelled(true);
+      CooldownManager.cancelAction(breakEvent);
     }
 
   }
@@ -83,11 +91,17 @@ public class CropBreakEvent implements Listener {
    */
   @EventHandler
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
+    // Early return if we're still on cooldown
+    if (CooldownManager.tryCancel(interactEvent)) {
+      return;
+    }
+
     Block block = interactEvent.getClickedBlock();
     // Early return for non-crops. Surprisingly, BlockData: Ageable does not apply to copper blocks
     if (block == null || !(block.getBlockData() instanceof Ageable)) {
       return;
     }
+
     // Determine if it's left/right click or a trample and handle event
     switch (interactEvent.getAction()) {
       case Action.PHYSICAL -> handleTrample(interactEvent, block); // Always involves a block
@@ -105,16 +119,26 @@ public class CropBreakEvent implements Listener {
     // Only allow players with perms to break crops without a hoe, otherwise return if they have no hoe in hand
     if (!isHoe(heldItem)) {
       if (!player.hasPermission(FarmPerms.BREAK)) {
-        event.setCancelled(true);
+        CooldownManager.cancelAction(event);
       }
       return;
     }
 
-    // Disable default harvest behaviour
-    event.setCancelled(true);
+    // Disable default harvest behaviour and prevents spamming by using cooldowns
+    CooldownManager.cancelAction(event);
 
     // Must have permission to harvest
     if (!player.hasPermission(FarmPerms.HARVEST)) {
+      return;
+    }
+
+    // Early return if not a crop
+    BlockData cropData = crop.getBlockData();
+    if (!(cropData instanceof Ageable ageable)) {
+      return;
+    }
+    // or if crop is not mature yet
+    if (ageable.getAge() < ageable.getMaximumAge()) {
       return;
     }
 
@@ -123,28 +147,26 @@ public class CropBreakEvent implements Listener {
     dropItems(cropDrops, crop);
 
     // Rare event that instantly grows a crop after harvest
-    float rareEventChance = 0.05f;
-    boolean rareEvent = Math.random() < rareEventChance;
-
-    // Make the rare event noticeable with sound and particles
-    if (rareEvent) {
-      World world = crop.getWorld();
-      world.spawnParticle(Particle.HAPPY_VILLAGER, crop.getLocation().add(0.5, 1, 0.5), 5);
-      world.playSound(crop.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
-    }
-
-    BlockData cropData = crop.getBlockData();
+    boolean rareEvent = triggerRareEvent(crop.getWorld(), crop.getLocation());
 
     // Set max age if rare event triggers, otherwise reset it
-    if (cropData instanceof Ageable ageable) {
-      int age = rareEvent ? ageable.getMaximumAge() : 0;
-      ageable.setAge(age);
-      crop.setBlockData(ageable);
+    int age = rareEvent ? ageable.getMaximumAge() : 0;
+    ageable.setAge(age);
+    crop.setBlockData(ageable);
+  }
+
+  private boolean triggerRareEvent(World world, Location location) {
+    boolean rareEventTriggered = Math.random() < RARE_EVENT_CHANCE;
+    if (rareEventTriggered) {
+      world.spawnParticle(Particle.HAPPY_VILLAGER, location.add(0.5, 1, 0.5), 5);
+      world.playSound(location, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
     }
+    return rareEventTriggered;
   }
 
   private void dropItems(List<ItemStack> drops, Block crop) {
     drops.forEach(drop -> crop.getWorld().dropItemNaturally(crop.getLocation(), drop));
+    crop.getWorld().playSound(crop.getLocation(), Sound.ITEM_CROP_PLANT, 0.4f, 1.0f);
   }
 
   private void handleTrample(PlayerInteractEvent event, Block crop) {
@@ -161,7 +183,7 @@ public class CropBreakEvent implements Listener {
   }
 
   /**
-   * Applies damage to a tool and accounts for vanilla-ly and unbreakable behaviour.
+   * Applies damage to a tool and accounts for vanilla-like and unbreakable behaviour.
    *
    * @param player Current player
    * @param tool   Held tool
@@ -175,9 +197,31 @@ public class CropBreakEvent implements Listener {
     if (meta == null) {
       return;
     }
-    tool.damage(1, player); // Should handle unbreakable enchants vanilla-ly
+
+    if (meta instanceof Damageable damageable) { // The spigot-safe way
+      // Handle Unbreaking the vanilla way
+      int unbreakingLevel = tool.getEnchantmentLevel(Enchantment.UNBREAKING);
+      float damageChance = (1f / (unbreakingLevel + 1)); // https://minecraft.fandom.com/wiki/Unbreaking
+      boolean takeDamage = (Math.random() < damageChance);
+
+      if (takeDamage) {
+        int currentDamage = damageable.getDamage();
+        damageable.setDamage(currentDamage + 1);
+        tool.setItemMeta(meta);
+        tryVanillaBreak(tool, damageable, player);
+      }
+    }
+
+    // tool.damage(1, player); // This is Paper extended api... it would handle unbreaking too :(
   }
 
+  // Breaks tool if max durability is reached
+  private void tryVanillaBreak(ItemStack tool, Damageable damageable, Player player) {
+    if (damageable.getDamage() >= tool.getType().getMaxDurability()) {
+      player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+      player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
+    }
+  }
 
   // Handles calculations for how many crops to drop based on crop type
   private List<ItemStack> getCropDrops(ItemStack hoe, Material cropType) {
@@ -199,9 +243,7 @@ public class CropBreakEvent implements Listener {
 
     // Fortune behavior in this plugin is [amount to drop] + [fortune level]
     int fortuneLevel = hoe.getEnchantmentLevel(Enchantment.FORTUNE);
-
-    float extraSeedChance = 0.5f; // simple solution means ez to change later
-    int extraSeed = Math.random() < extraSeedChance ? 1 : 0; // Used to add seeds, rather than compare so is converted to int
+    int extraSeed = Math.random() < EXTRA_SEED_CHANCE ? 1 : 0; // Used to add seeds, rather than compare so is converted to int
 
     Material seed = cropDropInfo.getSeedDrop();
     Material crop = cropDropInfo.getCropDrop();

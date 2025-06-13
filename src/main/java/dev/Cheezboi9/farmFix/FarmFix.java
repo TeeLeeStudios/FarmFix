@@ -21,7 +21,7 @@ public final class FarmFix extends JavaPlugin {
 
   public void registerCommands() {
     Objects.requireNonNull(this.getCommand("ff")).setExecutor(new HelpCommand());
-    Objects.requireNonNull(this.getCommand("trample")).setExecutor(new HelpCommand());
+    Objects.requireNonNull(this.getCommand("trample")).setExecutor(new TrampleCommand());
   }
 
   public void registerEventListeners() {

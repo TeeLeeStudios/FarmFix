@@ -17,12 +17,13 @@ public class TrampleManager {
   static Logger logger = Logger.getLogger("FarmFix");
 
   // Get the Configuration File
-  private static final File CONFIG_FILE = new File(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("FarmFix")).getDataFolder(), "FarmFix-Trample.yml");
+  private static final File CONFIG_FILE = new File(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("FarmFix")).getDataFolder(),
+      "FarmFix-Trample.yml");
   private static final FileConfiguration CONFIG = YamlConfiguration.loadConfiguration(CONFIG_FILE);
 
   // Using ConcurrentHashMap instead of a HashMap because it doesn't lock the entire map on access and is threadsafe
-  private static final ConcurrentHashMap<UUID, Boolean> PLAYER_TRAMPLE = new ConcurrentHashMap<>();
-  private static final ConcurrentHashMap<UUID, Boolean> FORCED_TRAMPLE = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<UUID, Boolean> playerTrample = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<UUID, Boolean> forcedTrample = new ConcurrentHashMap<>();
 
   static { // Called on load to memory
     loadConfig();
@@ -47,8 +48,8 @@ public class TrampleManager {
         UUID uuid = UUID.fromString(key);
         boolean trample = CONFIG.getBoolean(key + ".trample"); // Default false
         boolean forcedTrample = CONFIG.getBoolean(key + ".forced"); // Also default false
-        PLAYER_TRAMPLE.put(uuid, trample);
-        FORCED_TRAMPLE.put(uuid, forcedTrample);
+        playerTrample.put(uuid, trample);
+        TrampleManager.forcedTrample.put(uuid, forcedTrample);
 
       } catch (IllegalArgumentException e) {
         logger.warning("UUID not found in " + CONFIG.getName());
@@ -57,13 +58,13 @@ public class TrampleManager {
   }
 
   public static boolean toggleTrample(UUID uuid, boolean forced) {
-    boolean newTrample = !PLAYER_TRAMPLE.getOrDefault(uuid, false);
-    PLAYER_TRAMPLE.put(uuid, newTrample);
+    boolean newTrample = !playerTrample.getOrDefault(uuid, false);
+    playerTrample.put(uuid, newTrample);
     if (forced) {
-      FORCED_TRAMPLE.put(uuid, true);
+      forcedTrample.put(uuid, true);
       CONFIG.set(uuid + ".forced", true);
     } else {
-      FORCED_TRAMPLE.remove(uuid);
+      forcedTrample.remove(uuid);
       CONFIG.set(uuid + ".forced", false);
     }
     CONFIG.set(uuid + ".trample", newTrample);
@@ -72,11 +73,11 @@ public class TrampleManager {
   }
 
   public static boolean isForced(UUID uuid) {
-    return FORCED_TRAMPLE.getOrDefault(uuid, false);
+    return forcedTrample.getOrDefault(uuid, false);
   }
 
   public static boolean canTrample(UUID uuid) {
-    return PLAYER_TRAMPLE.getOrDefault(uuid, false);
+    return playerTrample.getOrDefault(uuid, false);
   }
 
 }
