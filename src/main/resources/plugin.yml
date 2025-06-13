@@ -5,19 +5,24 @@ api-version: '1.21'
 commands:
   ff:
     description: Core command for this plugin
-    usage: /<command> [help/-h]
+    usage: /<command>
     aliases: [farmfix]
   trample:
     description: Toggles Trample
-    usage: /<command> <opt Player> [opt Forced]
+    usage: /<command>
 permissions:
   farmfix.trample:
     description: Allows the ability to toggle trample mode if forced trample isn't toggled
+    default: true
   farmfix.harvest:
     description: Allows the ability to harvest crops using left or right click
+    default: true
   farmfix.break:
     description: Allows the ability to break crops
+    default: false
   farmfix.mod:
     description: Mod role for FarmFix
+    default: op
   groups.farmfix.mod:
     description: Mod Group for FarmFix
+    default: op
