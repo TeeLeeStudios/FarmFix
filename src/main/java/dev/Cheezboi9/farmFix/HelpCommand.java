@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class HelpCommand implements CommandExecutor {
 
-  private static final String[] HELP_COMMANDS = {"help", "-h"};
   private static final MiniMessage MM = MiniMessage.miniMessage();
 
   // I'm using an array rather than a list for the purposes of this test, but I would use a list of records here
