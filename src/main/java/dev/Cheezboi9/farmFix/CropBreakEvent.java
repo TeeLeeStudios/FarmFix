@@ -89,8 +89,8 @@ public class CropBreakEvent implements Listener {
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
 
     Block block = interactEvent.getClickedBlock();
-    // Early return for non-crops. Surprisingly, BlockData: Ageable does not apply to copper blocks
-    if (block == null || !(block.getBlockData() instanceof Ageable)) {
+    // Early return for non-crops or non-farmlands. Surprisingly, BlockData: Ageable does not apply to copper blocks
+    if (block == null || (!(block.getBlockData() instanceof Ageable) && block.getType() != Material.FARMLAND) ) {
       return;
     }
 
@@ -111,9 +111,6 @@ public class CropBreakEvent implements Listener {
     // If carried tool is bone meal, apply it correctly, otherwise return safely
     if (!isHoe(heldItem)) {
       if (heldItem.getType() == Material.BONE_MEAL) {
-//        event.setCancelled(true); // DEBUG: Might be redundant so commenting it out for testing
-//        crop.applyBoneMeal(event.getBlockFace());
-//        heldItem.setAmount(heldItem.getAmount() - 1);
         return;
       }
         event.setCancelled(true);
