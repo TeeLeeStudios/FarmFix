@@ -72,16 +72,12 @@ public class CropBreakEvent implements Listener {
    */
   @EventHandler
   public void onCropBreak(BlockBreakEvent breakEvent) {
-    // Early return if we're still on cooldown
-    if (CooldownManager.tryCancel(breakEvent)) {
-      return;
-    }
     Player player = breakEvent.getPlayer();
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
     // Prevent unauthorized block breaking behavior
     if (!player.hasPermission(FarmPerms.BREAK) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
-      CooldownManager.cancelAction(breakEvent);
+      breakEvent.setCancelled(true);
     }
 
   }
@@ -91,10 +87,6 @@ public class CropBreakEvent implements Listener {
    */
   @EventHandler
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
-    // Early return if we're still on cooldown
-    if (CooldownManager.tryCancel(interactEvent)) {
-      return;
-    }
 
     Block block = interactEvent.getClickedBlock();
     // Early return for non-crops. Surprisingly, BlockData: Ageable does not apply to copper blocks
@@ -115,28 +107,27 @@ public class CropBreakEvent implements Listener {
 
     Player player = event.getPlayer();
     ItemStack heldItem = player.getInventory().getItemInMainHand();
-
-    // Only allow players with perms to break crops without a hoe, otherwise return if they have no hoe in hand
+    Ageable ageable = (Ageable) crop.getBlockData(); // This is a safe cast as we've confirmed it's ageable before useHoe is called
+    // If carried tool is bone meal, apply it correctly, otherwise return safely
     if (!isHoe(heldItem)) {
-      if (!player.hasPermission(FarmPerms.BREAK)) {
-        CooldownManager.cancelAction(event);
+      if (heldItem.getType() == Material.BONE_MEAL) {
+//        event.setCancelled(true); // DEBUG: Might be redundant so commenting it out for testing
+//        crop.applyBoneMeal(event.getBlockFace());
+//        heldItem.setAmount(heldItem.getAmount() - 1);
+        return;
       }
+        event.setCancelled(true);
       return;
     }
 
     // Disable default harvest behaviour and prevents spamming by using cooldowns
-    CooldownManager.cancelAction(event);
+    event.setCancelled(true);
 
     // Must have permission to harvest
     if (!player.hasPermission(FarmPerms.HARVEST)) {
       return;
     }
 
-    // Early return if not a crop
-    BlockData cropData = crop.getBlockData();
-    if (!(cropData instanceof Ageable ageable)) {
-      return;
-    }
     // or if crop is not mature yet
     if (ageable.getAge() < ageable.getMaximumAge()) {
       return;
