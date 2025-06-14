@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CropBreakEvent implements Listener {
-
   private static final float RARE_EVENT_CHANCE = 0.05f; // Chance to immediately grow a crop after harvest
   private static final float EXTRA_SEED_CHANCE = 0.5f;
 
@@ -79,7 +78,6 @@ public class CropBreakEvent implements Listener {
     if (!player.hasPermission(FarmPerms.BREAK) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
       breakEvent.setCancelled(true);
     }
-
   }
 
   /**
@@ -87,7 +85,6 @@ public class CropBreakEvent implements Listener {
    */
   @EventHandler
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
-
     Block block = interactEvent.getClickedBlock();
     // Early return for non-crops or non-farmlands. Surprisingly, BlockData: Ageable does not apply to copper blocks
     if (block == null || (!(block.getBlockData() instanceof Ageable) && block.getType() != Material.FARMLAND) ) {
@@ -100,31 +97,31 @@ public class CropBreakEvent implements Listener {
       case Action.RIGHT_CLICK_BLOCK, Action.LEFT_CLICK_BLOCK -> useHoe(interactEvent, block);
       // Falls through so we can handle other events should we choose to
     }
-
   }
 
   private void useHoe(PlayerInteractEvent event, Block crop) {
-
     Player player = event.getPlayer();
     ItemStack heldItem = player.getInventory().getItemInMainHand();
-    Ageable ageable = (Ageable) crop.getBlockData(); // This is a safe cast as we've confirmed it's ageable before useHoe is called
-    // If carried tool is bone meal, apply it correctly, otherwise return safely
-    if (!isHoe(heldItem)) {
-      if (heldItem.getType() == Material.BONE_MEAL) {
-        return;
-      }
-        event.setCancelled(true);
+
+    // Early returns so that the crop block is actually a crop, and we're using a hoe
+    if (!(crop.getBlockData() instanceof Ageable ageable)) {
+      return;
+    }
+    // Bone meal behaviour should not be affected
+    if (heldItem.getType() == Material.BONE_MEAL) {
       return;
     }
 
-    // Disable default harvest behaviour and prevents spamming by using cooldowns
+    // Disable default harvest behaviour
     event.setCancelled(true);
 
+    if (!isHoe(heldItem)) {
+      return;
+    }
     // Must have permission to harvest
     if (!player.hasPermission(FarmPerms.HARVEST)) {
       return;
     }
-
     // or if crop is not mature yet
     if (ageable.getAge() < ageable.getMaximumAge()) {
       return;
@@ -167,7 +164,7 @@ public class CropBreakEvent implements Listener {
   }
 
   private boolean isHoe(ItemStack heldItem) {
-    return heldItem != null && heldItem.getType().name().endsWith("_HOE");
+    return heldItem.getType().name().endsWith("_HOE");
   }
 
   /**
@@ -213,7 +210,6 @@ public class CropBreakEvent implements Listener {
 
   // Handles calculations for how many crops to drop based on crop type
   private List<ItemStack> getCropDrops(ItemStack hoe, Material cropType) {
-
     // Early return for unsupported crops/blocks
     CropInfo cropDropInfo = CropInfo.fromCropBlock(cropType);
     if (cropDropInfo == null) {
