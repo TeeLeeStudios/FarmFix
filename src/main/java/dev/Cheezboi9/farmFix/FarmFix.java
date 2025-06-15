@@ -27,5 +27,6 @@ public final class FarmFix extends JavaPlugin {
   public void registerEventListeners() {
     PluginManager pluginManager = getServer().getPluginManager();
     pluginManager.registerEvents(new CropBreakEvent(), this);
+    pluginManager.registerEvents(new PistonEvent(), this);
   }
 }
