@@ -36,6 +36,8 @@ farmfix.trample - Allows self trample toggling behaviour
 farmfix.harvest - Allows harvesting with hoes.
 
 ## Commands
+Help command for this plugin is /ff
+
 Players can toggle their own trample using /trample
 
 Mods can toggle other user's trample using /trample [playername] [opt: forced]
