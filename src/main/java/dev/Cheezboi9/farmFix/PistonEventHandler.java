@@ -25,7 +25,8 @@ public class PistonEventHandler implements Listener {
 
   /**
    * Cancels piston extention/retraction if an illegal block is detected
-   * @param pistonEvent The Piston event to cancel if illegal block is affected
+   *
+   * @param pistonEvent    The Piston event to cancel if illegal block is affected
    * @param blocksAffected The list of blocks the piston would affect
    */
   private void cancelIllegalAction(BlockPistonEvent pistonEvent, List<Block> blocksAffected) {

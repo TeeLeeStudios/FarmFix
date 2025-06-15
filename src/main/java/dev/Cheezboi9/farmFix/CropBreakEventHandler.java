@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.plugin.PluginLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,8 @@ public class CropBreakEventHandler implements Listener {
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
     // Prevent unauthorized block breaking behavior
-    if (!player.hasPermission(FarmPerms.BREAK) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
+    if (!(player.hasPermission(FarmPerms.BREAK) || FarmPerms.isMod(player)) &&
+        (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
       breakEvent.setCancelled(true);
     }
   }
@@ -87,7 +89,7 @@ public class CropBreakEventHandler implements Listener {
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
     Block block = interactEvent.getClickedBlock();
     // Early return for non-crops or non-farmlands. Surprisingly, BlockData: Ageable does not apply to copper blocks
-    if (block == null || (!(block.getBlockData() instanceof Ageable) && block.getType() != Material.FARMLAND) ) {
+    if (block == null || (!(block.getBlockData() instanceof Ageable) && block.getType() != Material.FARMLAND)) {
       return;
     }
 
@@ -233,7 +235,8 @@ public class CropBreakEventHandler implements Listener {
     Material crop = cropDropInfo.getCropDrop();
 
     List<ItemStack> toDrop = new ArrayList<>();
-    toDrop.add(new ItemStack(crop, baseDropAmount + fortuneLevel));
+    int totalCropDrops = baseDropAmount + fortuneLevel; // Kept this in for a sanity check
+    toDrop.add(new ItemStack(crop, totalCropDrops));
     if (seed != null) {
       toDrop.add(new ItemStack(seed, 1 + extraSeed));
     }

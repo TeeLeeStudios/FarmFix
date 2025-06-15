@@ -11,10 +11,11 @@ public class HelpCommand implements CommandExecutor {
   private static final MiniMessage MM = MiniMessage.miniMessage();
 
   // I'm using an array rather than a list for the purposes of this test, but I would use a list of records here
-  /** SUB_COMMANDS is a paired array [command usage, permission]
-    * and uses a 1 dimensional array for less overhead.
-    * I considered using a map but realistically, I'm not going to be adding more commands
-    */
+  /**
+   * SUB_COMMANDS is a paired array [command usage, permission]
+   * and uses a 1 dimensional array for less overhead.
+   * I considered using a map but realistically, I'm not going to be adding more commands
+   */
   private final String[] SUB_COMMANDS = {
       "/trample <opt: player> [opt: forced <true,1,false,0> ] - Toggles ability to trample crops for other players, and optionally force it", FarmPerms.MOD,
       "/trample - Toggles ability to trample crops", FarmPerms.TRAMPLE,

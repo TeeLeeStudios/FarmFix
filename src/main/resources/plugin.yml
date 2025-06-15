@@ -6,7 +6,7 @@ commands:
   ff:
     description: Core command for this plugin
     usage: /<command>
-    aliases: [farmfix]
+    aliases: [ farmfix ]
   trample:
     description: Toggles Trample
     usage: /<command>

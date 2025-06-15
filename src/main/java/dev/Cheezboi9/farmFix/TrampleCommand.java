@@ -59,8 +59,7 @@ public class TrampleCommand implements CommandExecutor {
     // If the [opt: forced] flag has been specified
     if (args.length >= 2) {
       toForce = args[1].equalsIgnoreCase("true") || args[1].equals("1");
-    }
-    else {
+    } else {
       toForce = false;
     }
 
