@@ -11,10 +11,10 @@ public class FarmPerms {
 
 
   public static boolean isMod(Player player) {
-    return player.hasPermission(MOD) || player.hasPermission("groups." + MOD);
+    return player.hasPermission(MOD) || player.hasPermission("groups." + MOD) || player.isOp();
   }
 
   public static boolean isMod(CommandSender sender) {
-    return sender.hasPermission(MOD) || sender.hasPermission("groups." + MOD);
+    return sender.hasPermission(MOD) || sender.hasPermission("groups." + MOD) || sender.isOp();
   }
 }
