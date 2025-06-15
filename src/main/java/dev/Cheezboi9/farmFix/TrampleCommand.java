@@ -53,7 +53,7 @@ public class TrampleCommand implements CommandExecutor {
       return true;
     }
 
-    boolean newState, toForce;
+    boolean toForce;
     UUID uuid = offlinePlayer.getUniqueId();
 
     // If the [opt: forced] flag has been specified
@@ -64,7 +64,7 @@ public class TrampleCommand implements CommandExecutor {
       toForce = false;
     }
 
-    newState = TrampleManager.toggleTrample(uuid, toForce);
+    boolean newState = TrampleManager.toggleTrample(uuid, toForce);
 
     // Informing the user of changes
     sender.sendMessage(args[0] + "'s trample is now: " + newState +
