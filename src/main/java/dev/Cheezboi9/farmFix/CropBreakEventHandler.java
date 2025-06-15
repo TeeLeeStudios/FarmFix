@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.Damageable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CropBreakEvent implements Listener {
+public class CropBreakEventHandler implements Listener {
   private static final float RARE_EVENT_CHANCE = 0.05f; // Chance to immediately grow a crop after harvest
   private static final float EXTRA_SEED_CHANCE = 0.5f;
 
