@@ -75,7 +75,7 @@ public class CropBreakEventHandler implements Listener {
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
     // Prevent unauthorized block breaking behavior
-    if (FarmPerms.canBreak(player) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
+    if (!FarmPerms.canBreak(player) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
       breakEvent.setCancelled(true);
     }
   }
@@ -99,6 +99,7 @@ public class CropBreakEventHandler implements Listener {
     }
   }
 
+  // The bread and butter of the entire plugin. Handles all crop interaction with hoes and bone meal
   private void useHoe(PlayerInteractEvent event, Block crop) {
     Player player = event.getPlayer();
     ItemStack heldItem = player.getInventory().getItemInMainHand();
@@ -112,12 +113,18 @@ public class CropBreakEventHandler implements Listener {
       return;
     }
 
+    // Prevent interacting with any crop items unless they can break it or have a hoe
+    if (!isHoe(heldItem)) {
+      if (FarmPerms.canBreak(player)) {
+        return;
+      }
+      event.setCancelled(true);
+      return;
+    }
+
     // Disable default harvest behaviour
     event.setCancelled(true);
 
-    if (!isHoe(heldItem)) {
-      return;
-    }
     // Must have permission to harvest
     if (!FarmPerms.canHarvest(player)) {
       return;
@@ -140,6 +147,7 @@ public class CropBreakEventHandler implements Listener {
     crop.setBlockData(ageable);
   }
 
+  // Checks to see if we can trigger the rare event, and give visual/audio feedback if we have.
   private boolean triggerRareEvent(World world, Location location) {
     boolean rareEventTriggered = Math.random() < RARE_EVENT_CHANCE;
     if (rareEventTriggered) {
