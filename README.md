@@ -38,6 +38,6 @@ farmfix.harvest - Allows harvesting with hoes.
 ## Commands
 Players can toggle their own trample using /trample
 
-Mods can toggle other user's trample using /trample <playername> [opt: forced]
+Mods can toggle other user's trample using /trample [playername] [opt: forced]
 
 The [opt: forced] flag accepts "true" and "1" as true, all other values as false
