@@ -4,7 +4,7 @@ main: dev.Cheezboi9.farmFix.FarmFix
 api-version: '1.21'
 commands:
   ff:
-    description: Core command for this plugin
+    description: Help Command for FarmFix
     usage: /<command>
     aliases: [ farmfix ]
   trample:
