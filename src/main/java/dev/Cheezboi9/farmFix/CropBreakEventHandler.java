@@ -75,8 +75,7 @@ public class CropBreakEventHandler implements Listener {
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
     // Prevent unauthorized block breaking behavior
-    if (!(player.hasPermission(FarmPerms.BREAK) || FarmPerms.isMod(player)) &&
-        (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
+    if (FarmPerms.canBreak(player) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
       breakEvent.setCancelled(true);
     }
   }
@@ -120,7 +119,7 @@ public class CropBreakEventHandler implements Listener {
       return;
     }
     // Must have permission to harvest
-    if (!player.hasPermission(FarmPerms.HARVEST)) {
+    if (!FarmPerms.canHarvest(player)) {
       return;
     }
     // or if crop is not mature yet

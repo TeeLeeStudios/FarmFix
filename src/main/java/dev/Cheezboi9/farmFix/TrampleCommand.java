@@ -23,14 +23,14 @@ public class TrampleCommand implements CommandExecutor {
         sender.sendMessage("You must be a player to toggle trample this way");
         return true;
       }
+      Player player = (Player) sender;
       // Early return if no perms to toggle trample
-      if (!(sender.hasPermission(FarmPerms.TRAMPLE))) {
+      if (!FarmPerms.canTrample(player)) {
         sender.sendMessage("You do not have permission to toggle your trample");
         return true;
       }
-      Player player = (Player) sender;
       // Early return if we don't have perms or forced toggle
-      if (TrampleManager.isForced(player.getUniqueId()) && !FarmPerms.isMod(player)) {
+      if (TrampleManager.isForced(player.getUniqueId()) && FarmPerms.notMod(player)) {
         sender.sendMessage("Unable to toggle as your trample is set by a mod");
         return true;
       }
