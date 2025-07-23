@@ -9,7 +9,10 @@ commands:
     aliases: [ farmfix ]
   trample:
     description: Toggles Trample
-    usage: /<command>
+    usage: /<command> <player> <trampleState>
+  forced:
+    description: Forces Trample State
+    usage: /<command> <player> <forcedState>
 permissions:
   farmfix.trample:
     description: Allows the ability to toggle trample mode if forced trample isn't toggled

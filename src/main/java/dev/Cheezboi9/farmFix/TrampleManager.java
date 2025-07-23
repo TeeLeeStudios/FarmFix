@@ -57,19 +57,10 @@ public class TrampleManager {
     }
   }
 
-  public static boolean toggleTrample(UUID uuid, boolean forced) {
-    boolean newTrample = !playerTrample.getOrDefault(uuid, false);
-    playerTrample.put(uuid, newTrample);
-    if (forced) {
-      forcedTrample.put(uuid, true);
-      CONFIG.set(uuid + ".forced", true);
-    } else {
-      forcedTrample.remove(uuid);
-      CONFIG.set(uuid + ".forced", false);
-    }
-    CONFIG.set(uuid + ".trample", newTrample);
+  public static void toggleTrample(UUID uuid, boolean state) {
+    playerTrample.put(uuid, state);
+    CONFIG.set(uuid + ".trample", state);
     saveConfig();
-    return newTrample;
   }
 
   public static void forceTrample(UUID uuid, boolean state) {

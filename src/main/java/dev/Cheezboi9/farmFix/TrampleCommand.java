@@ -35,12 +35,13 @@ public class TrampleCommand implements CommandExecutor {
         return true;
       }
 
-      boolean newState = TrampleManager.toggleTrample(player.getUniqueId(), false);
+      boolean newState = !TrampleManager.canTrample(player.getUniqueId());
+      TrampleManager.toggleTrample(player.getUniqueId(), newState);
       sender.sendMessage("Trample is now: " + newState);
       return true;
     }
 
-    // Only allows mods to use /trample <player> [opt: forced]
+    // Only allows mods to use /trample <player>
     if (!FarmPerms.isMod(sender)) {
       sender.sendMessage("You do not have permissions to toggle other player's trample");
       return true;
@@ -53,21 +54,19 @@ public class TrampleCommand implements CommandExecutor {
       return true;
     }
 
-    boolean toForce;
+    boolean trampleState;
     UUID uuid = offlinePlayer.getUniqueId();
 
-    // If the [opt: forced] flag has been specified
     if (args.length >= 2) {
-      toForce = args[1].equalsIgnoreCase("true") || args[1].equals("1");
+      trampleState = args[1].equalsIgnoreCase("true") || args[1].equals("1");
     } else {
-      toForce = false;
+      trampleState = false;
     }
 
-    boolean newState = TrampleManager.toggleTrample(uuid, toForce);
+    TrampleManager.toggleTrample(uuid, trampleState);
 
     // Informing the user of changes
-    sender.sendMessage(args[0] + "'s trample is now: " + newState +
-        " and mod forced is: " + TrampleManager.isForced(uuid));
+    sender.sendMessage(args[0] + "'s trample is now: " + trampleState);
     return true;
   }
 }

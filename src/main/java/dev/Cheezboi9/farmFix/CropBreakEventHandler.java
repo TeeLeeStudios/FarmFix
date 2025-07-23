@@ -138,7 +138,7 @@ public class CropBreakEventHandler implements Listener {
     damageTool(player, heldItem);
     dropItems(cropDrops, crop);
 
-    // Rare event that instantly grows a crop after harvest
+    // Rare event that instantly grows a crop after harvest (double drops pretty much)
     boolean rareEvent = triggerRareEvent(crop.getWorld(), crop.getLocation());
 
     // Set max age if rare event triggers, otherwise reset it
