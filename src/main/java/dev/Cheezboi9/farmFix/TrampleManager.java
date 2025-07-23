@@ -72,6 +72,12 @@ public class TrampleManager {
     return newTrample;
   }
 
+  public static void forceTrample(UUID uuid, boolean state) {
+    forcedTrample.put(uuid, state);
+    CONFIG.set(uuid + ".forced", state);
+    saveConfig();
+  }
+
   public static boolean isForced(UUID uuid) {
     return forcedTrample.getOrDefault(uuid, false);
   }

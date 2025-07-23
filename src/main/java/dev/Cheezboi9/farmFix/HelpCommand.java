@@ -17,8 +17,9 @@ public class HelpCommand implements CommandExecutor {
    * I considered using a map but realistically, I'm not going to be adding more commands
    */
   private final String[] SUB_COMMANDS = {
-      "/trample <opt: player> [opt: forced <true,1,false,0> ] - Toggles ability to trample crops for other players, and optionally force it", FarmPerms.MOD,
+      "/trample <opt: player> <opt: forced [true,1,false,0]> - Toggles ability to trample crops for other players, and optionally force it", FarmPerms.MOD,
       "/trample - Toggles ability to trample crops", FarmPerms.TRAMPLE,
+      "/forced <player> <forcedState> - Forces player trample state to be <forcedState>", FarmPerms.MOD,
   };
 
   @Override
