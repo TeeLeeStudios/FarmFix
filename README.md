@@ -12,6 +12,8 @@ DIAMOND_HOE, NETHERITE_HOE -> 3 Crops
 
 Seed drops are 1 seed + 50% chance to drop 1 additional one.
 
+There is a 5% chance that crops grow instantly
+
 Disables Piston interaction with FARMLAND, and any CROPS
 
 ## Fortune Behaviour
@@ -40,6 +42,8 @@ Help command for this plugin is /ff
 
 Players can toggle their own trample using /trample
 
-Mods can toggle other user's trample using /trample [playername] [opt: forced]
+Mods can toggle other user's trample using /trample [playername] [state]
 
-The [opt: forced] flag accepts "true" and "1" as true, all other values as false
+Mods can force trample states for users ysubg /forced [playername] [state]
+
+The [state] flag accepts "true" and "1" as true, all other values as false
