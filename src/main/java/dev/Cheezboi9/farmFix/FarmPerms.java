@@ -11,25 +11,22 @@ public class FarmPerms {
 
 
   public static boolean notMod(Player player) {
-    return !player.hasPermission(MOD) && !player.hasPermission("groups." + MOD) && !player.isOp();
+    return !player.hasPermission(MOD);
   }
 
   public static boolean isMod(CommandSender sender) {
-    return sender.hasPermission(MOD) || sender.hasPermission("groups." + MOD) || sender.isOp();
+    return sender.hasPermission(MOD);
   }
 
   public static boolean canHarvest(Player player){
-    return player.hasPermission(HARVEST) ||
-        (player.hasPermission(MOD) || player.hasPermission("groups." + MOD) || player.isOp());
+    return player.hasPermission(HARVEST) || (player.hasPermission(MOD));
   }
 
   public static boolean canBreak(Player player){
-    return player.hasPermission(BREAK) ||
-        (player.hasPermission(MOD) || player.hasPermission("groups." + MOD) || player.isOp());
+    return player.hasPermission(BREAK) || (player.hasPermission(MOD));
   }
 
   public static boolean canTrample(Player player){
-    return player.hasPermission(BREAK) ||
-        (player.hasPermission(MOD) || player.hasPermission("groups." + MOD) || player.isOp());
+    return player.hasPermission(TRAMPLE) || (player.hasPermission(MOD));
   }
 }
