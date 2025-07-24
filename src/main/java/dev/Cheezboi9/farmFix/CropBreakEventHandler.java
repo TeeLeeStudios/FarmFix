@@ -74,10 +74,30 @@ public class CropBreakEventHandler implements Listener {
     Player player = breakEvent.getPlayer();
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
+
     // Prevent unauthorized block breaking behavior
     if (!FarmPerms.canBreak(player) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
       breakEvent.setCancelled(true);
     }
+
+    // Only drop 1 seed
+    if (data instanceof Ageable) {
+      CropInfo cropInfo = CropInfo.fromCropBlock(block.getType());
+      if (cropInfo == null) { // Crop doesn't exist so default to vanilla behaviour
+        return;
+      }
+      // Disable default drop behaviour
+      breakEvent.setDropItems(false);
+      // If the crop doesn't have a seed, drop the crop so it can be replanted
+      Material seed = cropInfo.getSeedDrop();
+      if (seed == null) {
+        seed = cropInfo.getCropDrop();
+      }
+
+      block.getWorld().dropItemNaturally(block.getLocation(), ItemStack.of(seed,1));
+      block.getWorld().playSound(block.getLocation(), Sound.ITEM_CROP_PLANT, 0.4f, 1.0f);
+    }
+
   }
 
   /**
@@ -228,7 +248,7 @@ public class CropBreakEventHandler implements Listener {
     Material hoeType = hoe.getType();
     int baseDropAmount = switch (hoeType) {
       case WOODEN_HOE, STONE_HOE -> 1;
-      case IRON_HOE -> 2;
+      case IRON_HOE, GOLDEN_HOE -> 2;
       case DIAMOND_HOE, NETHERITE_HOE -> 3;
       default -> 0;
     };
