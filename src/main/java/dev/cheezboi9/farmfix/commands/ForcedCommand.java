@@ -1,5 +1,7 @@
-package dev.Cheezboi9.farmFix;
+package dev.cheezboi9.farmfix.commands;
 
+import dev.cheezboi9.farmfix.FarmFix;
+import dev.cheezboi9.farmfix.FarmPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -37,7 +39,7 @@ public class ForcedCommand implements CommandExecutor {
     // Handling the state value
     boolean toForce = args[1].equalsIgnoreCase("true") || args[1].equals("1");
 
-    TrampleManager.forceTrample(offlinePlayer.getUniqueId(), toForce);
+    FarmFix.getTrampleManager().forceTrample(offlinePlayer.getUniqueId(), toForce);
 
     sender.sendMessage(args[0] + "'s forced trample state is now: " + toForce);
 

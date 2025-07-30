@@ -1,5 +1,8 @@
-package dev.Cheezboi9.farmFix;
+package dev.cheezboi9.farmfix.commands;
 
+import dev.cheezboi9.farmfix.FarmFix;
+import dev.cheezboi9.farmfix.FarmPerms;
+import dev.cheezboi9.farmfix.managers.TrampleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -16,6 +19,7 @@ public class TrampleCommand implements CommandExecutor {
   public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
                            @NotNull String label, @NotNull String[] args) {
     boolean isPlayer = sender instanceof Player;
+    TrampleManager trampleManager = FarmFix.getTrampleManager();
 
     if (args.length == 0) {
       // Early return for console trying to use trample incorrectly
@@ -30,13 +34,13 @@ public class TrampleCommand implements CommandExecutor {
         return true;
       }
       // Early return if we don't have perms or forced toggle
-      if (TrampleManager.isForced(player.getUniqueId()) && FarmPerms.notMod(player)) {
+      if (trampleManager.isForced(player.getUniqueId()) && FarmPerms.notMod(player)) {
         sender.sendMessage("Unable to toggle as your trample is set by a mod");
         return true;
       }
 
-      boolean newState = !TrampleManager.canTrample(player.getUniqueId());
-      TrampleManager.toggleTrample(player.getUniqueId(), newState);
+      boolean newState = !trampleManager.canTrample(player.getUniqueId());
+      trampleManager.toggleTrample(player.getUniqueId(), newState);
       sender.sendMessage("Trample is now: " + newState);
       return true;
     }
@@ -63,7 +67,7 @@ public class TrampleCommand implements CommandExecutor {
       trampleState = false;
     }
 
-    TrampleManager.toggleTrample(uuid, trampleState);
+    trampleManager.toggleTrample(uuid, trampleState);
 
     // Informing the user of changes
     sender.sendMessage(args[0] + "'s trample is now: " + trampleState);

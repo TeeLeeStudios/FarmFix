@@ -1,5 +1,6 @@
-package dev.Cheezboi9.farmFix;
+package dev.cheezboi9.farmfix.commands;
 
+import dev.cheezboi9.farmfix.FarmPerms;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

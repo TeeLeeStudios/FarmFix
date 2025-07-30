@@ -1,5 +1,8 @@
-package dev.Cheezboi9.farmFix;
+package dev.cheezboi9.farmfix.eventhandlers;
 
+import dev.cheezboi9.farmfix.FarmFix;
+import dev.cheezboi9.farmfix.FarmPerms;
+import dev.cheezboi9.farmfix.eventhandlers.croputils.CropUtility;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -18,84 +21,37 @@ import org.bukkit.inventory.meta.Damageable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dev.cheezboi9.farmfix.eventhandlers.croputils.CropUtility.dropSeed;
+
 public class CropBreakEventHandler implements Listener {
-  private static final float RARE_EVENT_CHANCE = 0.05f; // Chance to immediately grow a crop after harvest
-  private static final float EXTRA_SEED_CHANCE = 0.5f;
 
-  // a crop matrix that reads [crop type, primary drop, seed drop]
-  private enum CropInfo {
-    WHEAT(Material.WHEAT, Material.WHEAT, Material.WHEAT_SEEDS),
-    BEETROOTS(Material.BEETROOTS, Material.BEETROOT, Material.BEETROOT_SEEDS),
-    COCOA(Material.COCOA, Material.COCOA_BEANS, Material.COCOA_BEANS),
-    // Seedless crops
-    CARROTS(Material.CARROTS, Material.CARROT, null),
-    POTATOES(Material.POTATOES, Material.POTATO, null),
-    NETHER_WART(Material.NETHER_WART, Material.NETHER_WART, null);
+  private final float RARE_EVENT_CHANCE = 0.05f; // Chance to immediately grow a crop after harvest
+  private final float EXTRA_SEED_CHANCE = 0.5f;
 
-    private final Material cropType;
-    private final Material cropDrop;
-    private final Material seedDrop;
-
-    // Constructor
-    CropInfo(Material cropType, Material cropDrop, Material seedDrop) {
-      this.cropType = cropType;
-      this.cropDrop = cropDrop;
-      this.seedDrop = seedDrop;
-    }
-
-    // Accessor Methods
-    Material getCropDrop() {
-      return cropDrop;
-    }
-
-    Material getSeedDrop() {
-      return seedDrop;
-    }
-
-    // Search func returns null if crop type is not in CropInfo.
-    static CropInfo fromCropBlock(Material type) {
-      for (CropInfo info : CropInfo.values()) {
-        if (info.cropType == type) {
-          return info;
-        }
-      }
-      return null; // The crop block is not found
-    }
-  }
 
   /**
    * Handles crop breaking (left click) behavior.
-   * Only allows players with permission to be able to break crops.
    *
    * @param breakEvent event data from breaking any block
    */
-  @EventHandler
+  @EventHandler (ignoreCancelled = true)
   public void onCropBreak(BlockBreakEvent breakEvent) {
-    Player player = breakEvent.getPlayer();
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
-
-    // Prevent unauthorized block breaking behavior
-    if (!FarmPerms.canBreak(player) && (data instanceof Ageable || block.getType() == Material.FARMLAND)) {
-      breakEvent.setCancelled(true);
-    }
-
+    Player player = breakEvent.getPlayer();
+    // TODO: Drop seed instead, Prevent circumventing mod by breaking Farmland
     // Only drop 1 seed
     if (data instanceof Ageable) {
-      CropInfo cropInfo = CropInfo.fromCropBlock(block.getType());
+      CropUtility.CropInfo cropInfo = CropUtility.CropInfo.fromCropBlock(block.getType());
       if (cropInfo == null) { // Crop doesn't exist so default to vanilla behaviour
         return;
       }
       // Disable default drop behaviour
       breakEvent.setDropItems(false);
-      // If the crop doesn't have a seed, drop the crop so it can be replanted
-      Material seed = cropInfo.getSeedDrop();
-      if (seed == null) {
-        seed = cropInfo.getCropDrop();
+      // Don't drop seeds if in creative, otherwise drop 1 seed
+      if (player.getGameMode() != GameMode.CREATIVE) {
+        dropSeed(block, cropInfo); // Using a function for legibility
       }
-
-      block.getWorld().dropItemNaturally(block.getLocation(), ItemStack.of(seed,1));
-      block.getWorld().playSound(block.getLocation(), Sound.ITEM_CROP_PLANT, 0.4f, 1.0f);
     }
 
   }
@@ -103,7 +59,7 @@ public class CropBreakEventHandler implements Listener {
   /**
    * Handles harvest behaviour
    */
-  @EventHandler
+  @EventHandler (ignoreCancelled = true)
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
     Block block = interactEvent.getClickedBlock();
     // Early return for non-crops or non-farmlands. Surprisingly, BlockData: Ageable does not apply to copper blocks
@@ -133,13 +89,9 @@ public class CropBreakEventHandler implements Listener {
       return;
     }
 
-    // Prevent interacting with any crop items unless they can break it or have a hoe
+    // Right-clicking without a hoe does nothing while left-clicking will trigger onCropBreak()
     if (!isHoe(heldItem)) {
-      if (FarmPerms.canBreak(player)) {
         return;
-      }
-      event.setCancelled(true);
-      return;
     }
 
     // Disable default harvest behaviour
@@ -185,7 +137,7 @@ public class CropBreakEventHandler implements Listener {
   private void handleTrample(PlayerInteractEvent event, Block crop) {
     Player player = event.getPlayer();
     if (crop.getType() == Material.FARMLAND) {
-      if (!TrampleManager.canTrample(player.getUniqueId())) {
+      if (!FarmFix.getTrampleManager().canTrample(player.getUniqueId())) {
         event.setCancelled(true);
       }
     }
@@ -239,7 +191,7 @@ public class CropBreakEventHandler implements Listener {
   // Handles calculations for how many crops to drop based on crop type
   private List<ItemStack> getCropDrops(ItemStack hoe, Material cropType) {
     // Early return for unsupported crops/blocks
-    CropInfo cropDropInfo = CropInfo.fromCropBlock(cropType);
+    CropUtility.CropInfo cropDropInfo = CropUtility.CropInfo.fromCropBlock(cropType);
     if (cropDropInfo == null) {
       return List.of();
     }
@@ -263,7 +215,7 @@ public class CropBreakEventHandler implements Listener {
     List<ItemStack> toDrop = new ArrayList<>();
     int totalCropDrops = baseDropAmount + fortuneLevel; // Kept this in for a sanity check
     toDrop.add(new ItemStack(crop, totalCropDrops));
-    if (seed != null) {
+    if (seed != null) { // Intended behaviour as we don't want to drop extra crops if they don't have seeds
       toDrop.add(new ItemStack(seed, 1 + extraSeed));
     }
 

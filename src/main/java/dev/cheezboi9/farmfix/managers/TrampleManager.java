@@ -1,4 +1,4 @@
-package dev.Cheezboi9.farmFix;
+package dev.cheezboi9.farmfix.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,19 +17,17 @@ public class TrampleManager {
   static Logger logger = Logger.getLogger("FarmFix");
 
   // Get the Configuration File
-  private static final File CONFIG_FILE = new File(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("FarmFix")).getDataFolder(),
+  private final File CONFIG_FILE = new File(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("FarmFix")).getDataFolder(),
       "FarmFix-Trample.yml");
-  private static final FileConfiguration CONFIG = YamlConfiguration.loadConfiguration(CONFIG_FILE);
+  private final FileConfiguration CONFIG = YamlConfiguration.loadConfiguration(CONFIG_FILE);
 
   // Using ConcurrentHashMap instead of a HashMap because it doesn't lock the entire map on access and is threadsafe
-  private static final ConcurrentHashMap<UUID, Boolean> playerTrample = new ConcurrentHashMap<>();
-  private static final ConcurrentHashMap<UUID, Boolean> forcedTrample = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<UUID, Boolean> playerTrample = new ConcurrentHashMap<>();
+  private final ConcurrentHashMap<UUID, Boolean> forcedTrample = new ConcurrentHashMap<>();
 
-  static { // Called on load to memory
-    loadConfig();
-  }
+  private boolean mobTrample = false;
 
-  private static void saveConfig() {
+  public void saveConfig() {
     try { // Try Catch for most file based operations to prevent crashing
       CONFIG.save(CONFIG_FILE);
     } catch (IOException e) {
@@ -37,7 +35,7 @@ public class TrampleManager {
     }
   }
 
-  private static void loadConfig() {
+  public void loadConfig() {
     // Early return if no file
     if (!CONFIG_FILE.exists()) {
       return;
@@ -47,34 +45,43 @@ public class TrampleManager {
       try {
         UUID uuid = UUID.fromString(key);
         boolean trample = CONFIG.getBoolean(key + ".trample"); // Default false
-        boolean forcedTrample = CONFIG.getBoolean(key + ".forced"); // Also default false
+        boolean isForcedTrample = CONFIG.getBoolean(key + ".forced"); // Also default false
         playerTrample.put(uuid, trample);
-        TrampleManager.forcedTrample.put(uuid, forcedTrample);
+        forcedTrample.put(uuid, isForcedTrample);
 
       } catch (IllegalArgumentException e) {
         logger.warning("UUID not found in " + CONFIG.getName());
       }
     }
   }
-
-  public static void toggleTrample(UUID uuid, boolean state) {
+  // TODO: Do not save default values
+  public void toggleTrample(UUID uuid, boolean state) {
     playerTrample.put(uuid, state);
     CONFIG.set(uuid + ".trample", state);
     saveConfig();
   }
-
-  public static void forceTrample(UUID uuid, boolean state) {
+  // TODO: Do not save default values
+  public void forceTrample(UUID uuid, boolean state) {
     forcedTrample.put(uuid, state);
     CONFIG.set(uuid + ".forced", state);
     saveConfig();
   }
 
-  public static boolean isForced(UUID uuid) {
+
+  public boolean isForced(UUID uuid) {
     return forcedTrample.getOrDefault(uuid, false);
   }
 
-  public static boolean canTrample(UUID uuid) {
+  public boolean canTrample(UUID uuid) {
     return playerTrample.getOrDefault(uuid, false);
+  }
+
+  public void setMobTrample (boolean state) {
+    this.mobTrample = state;
+  }
+
+  public boolean canMobTrample() {
+    return this.mobTrample;
   }
 
 }

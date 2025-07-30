@@ -1,6 +1,6 @@
 name: FarmFix
 version: '1.0-SNAPSHOT'
-main: dev.Cheezboi9.farmFix.FarmFix
+main: dev.cheezboi9.farmfix.FarmFix
 api-version: '1.21'
 commands:
   ff:

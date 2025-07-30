@@ -3,7 +3,7 @@ plugins {
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
-group = 'dev.Cheezboi9'
+group = 'dev.cheezboi9'
 version = '1.0-SNAPSHOT'
 
 repositories {
