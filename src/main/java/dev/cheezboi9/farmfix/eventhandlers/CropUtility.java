@@ -1,4 +1,4 @@
-package dev.cheezboi9.farmfix.eventhandlers.croputils;
+package dev.cheezboi9.farmfix.eventhandlers;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -10,7 +10,7 @@ import java.util.Objects;
 public class CropUtility {
 
   // a crop matrix that reads [crop type, primary drop, seed drop]
-  public static enum CropInfo {
+  public enum CropInfo {
     WHEAT(Material.WHEAT, Material.WHEAT, Material.WHEAT_SEEDS),
     BEETROOTS(Material.BEETROOTS, Material.BEETROOT, Material.BEETROOT_SEEDS),
     COCOA(Material.COCOA, Material.COCOA_BEANS, Material.COCOA_BEANS),
@@ -47,6 +47,16 @@ public class CropUtility {
         }
       }
       return null; // The crop block is not found
+    }
+
+    // Another search func using primary and secondary drop types as inputs
+    public static CropInfo fromDrop(Material type) {
+      for (CropInfo info : CropInfo.values()) {
+        if (info.cropDrop == type || info.seedDrop == type) {
+          return info;
+        }
+      }
+      return null; // Drops not in our crop matrix
     }
   }
 

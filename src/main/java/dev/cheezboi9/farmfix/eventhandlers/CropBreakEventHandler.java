@@ -2,7 +2,6 @@ package dev.cheezboi9.farmfix.eventhandlers;
 
 import dev.cheezboi9.farmfix.FarmFix;
 import dev.cheezboi9.farmfix.FarmPerms;
-import dev.cheezboi9.farmfix.eventhandlers.croputils.CropUtility;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -21,8 +20,6 @@ import org.bukkit.inventory.meta.Damageable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static dev.cheezboi9.farmfix.eventhandlers.croputils.CropUtility.dropSeed;
-
 public class CropBreakEventHandler implements Listener {
 
   private final float RARE_EVENT_CHANCE = 0.05f; // Chance to immediately grow a crop after harvest
@@ -30,17 +27,20 @@ public class CropBreakEventHandler implements Listener {
 
 
   /**
-   * Handles crop breaking (left click) behavior.
-   *
-   * @param breakEvent event data from breaking any block
+   * Handles crop breaking (left click) behavior
+   * @param breakEvent event data from breaking any block by a player
    */
   @EventHandler (ignoreCancelled = true)
   public void onCropBreak(BlockBreakEvent breakEvent) {
     Block block = breakEvent.getBlock();
     BlockData data = block.getBlockData();
     Player player = breakEvent.getPlayer();
-    // TODO: Drop seed instead, Prevent circumventing mod by breaking Farmland
-    // Only drop 1 seed
+
+    // Farmland is handled by DropEventHandler
+    if (block.getType() == Material.FARMLAND) {
+      return;
+    }
+
     if (data instanceof Ageable) {
       CropUtility.CropInfo cropInfo = CropUtility.CropInfo.fromCropBlock(block.getType());
       if (cropInfo == null) { // Crop doesn't exist so default to vanilla behaviour
@@ -50,10 +50,9 @@ public class CropBreakEventHandler implements Listener {
       breakEvent.setDropItems(false);
       // Don't drop seeds if in creative, otherwise drop 1 seed
       if (player.getGameMode() != GameMode.CREATIVE) {
-        dropSeed(block, cropInfo); // Using a function for legibility
+        CropUtility.dropSeed(block, cropInfo);
       }
     }
-
   }
 
   /**

@@ -1,7 +1,6 @@
 package dev.cheezboi9.farmfix.eventhandlers;
 
 import dev.cheezboi9.farmfix.FarmFix;
-import dev.cheezboi9.farmfix.eventhandlers.croputils.CropUtility;
 import dev.cheezboi9.farmfix.managers.TrampleManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

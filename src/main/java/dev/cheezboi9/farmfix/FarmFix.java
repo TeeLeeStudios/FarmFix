@@ -5,6 +5,7 @@ import dev.cheezboi9.farmfix.commands.HelpCommand;
 import dev.cheezboi9.farmfix.commands.TrampleCommand;
 import dev.cheezboi9.farmfix.eventhandlers.CropBreakEventHandler;
 import dev.cheezboi9.farmfix.eventhandlers.EntityTrampleEventHandler;
+import dev.cheezboi9.farmfix.eventhandlers.FarmlandBreakHandler;
 import dev.cheezboi9.farmfix.eventhandlers.PistonEventHandler;
 import dev.cheezboi9.farmfix.managers.TrampleManager;
 import org.bukkit.plugin.PluginManager;
@@ -16,11 +17,11 @@ public final class FarmFix extends JavaPlugin {
   private static TrampleManager trampleManager;
   @Override
   public void onEnable() {
+    trampleManager = new TrampleManager();
+    trampleManager.loadConfig();
     registerCommands();
     registerEventListeners();
     getLogger().info("Loaded Plugin");
-    trampleManager = new TrampleManager();
-    trampleManager.loadConfig();
   }
 
   @Override
@@ -41,6 +42,7 @@ public final class FarmFix extends JavaPlugin {
     pluginManager.registerEvents(new CropBreakEventHandler(), this);
     pluginManager.registerEvents(new PistonEventHandler(), this);
     pluginManager.registerEvents(new EntityTrampleEventHandler(), this);
+    pluginManager.registerEvents(new FarmlandBreakHandler(), this);
   }
 
   public static TrampleManager getTrampleManager(){
