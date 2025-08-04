@@ -5,7 +5,7 @@ Paper/Spigot plugin for Minecraft 1.21.1 that changes how crops are interacted w
  
 WOODEN_HOE, STONE_HOE -> 1 Crop
 
-IRON_HOE -> 2 Crops
+IRON_HOE, GOLD_HOE -> 2 Crops
 
 DIAMOND_HOE, NETHERITE_HOE -> 3 Crops
 
@@ -14,7 +14,7 @@ Seed drops are 1 seed + 50% chance to drop 1 additional one.
 
 There is a 5% chance that crops grow instantly
 
-Disables Piston interaction with FARMLAND, and any CROPS
+Prevents circumvention using Pistons, Mobs, Liquids, and Trampling.
 
 ## Fortune Behaviour
 
@@ -27,11 +27,8 @@ Unchanged from Vanilla
 ## Permissions
 ### Uses FarmPerms.java to manage permission behaviour
 
-groups.farmfix.mod - Can be changed to work with groups, acts as 'farmfix.mod'
 
 farmfix.mod - Gives the ability to toggle other players trample/force set other players trample
-
-farmfix.break - Allows breaking of crops/farmland (You cannot break crops with a hoe in hand)
 
 farmfix.trample - Allows self trample toggling behaviour
 
