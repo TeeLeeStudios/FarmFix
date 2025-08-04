@@ -16,6 +16,9 @@ public class TrampleManager {
   // Appends FarmFix to our logs which is easier to debug later
   static Logger logger = Logger.getLogger("FarmFix");
 
+  // MongoDB connection string
+  private final static String URI = "mongodb+srv://Cheezboi9:8288523Le.@cheezenvironment.2apl6re.mongodb.net/?retryWrites=true&w=majority&appName=CheezEnvironment";
+
   // Get the Configuration File
   private final File CONFIG_FILE = new File(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("FarmFix")).getDataFolder(),
       "FarmFix-Trample.yml");
@@ -33,6 +36,7 @@ public class TrampleManager {
     } catch (IOException e) {
       logger.severe("Unable to save FarmFix-Trample.yml : " + e.getMessage());
     }
+
   }
 
   public void loadConfig() {
