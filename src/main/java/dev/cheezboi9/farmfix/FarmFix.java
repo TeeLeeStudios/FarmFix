@@ -45,6 +45,7 @@ public final class FarmFix extends JavaPlugin {
     pluginManager.registerEvents(new EntityTrampleEventHandler(), this);
     pluginManager.registerEvents(new FarmlandBreakHandler(), this);
     pluginManager.registerEvents(new LiquidBreakEventHandler(), this);
+    pluginManager.registerEvents(new ExplosionHandler(), this);
   }
 
   public static TrampleManager getTrampleManager(){
