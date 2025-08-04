@@ -13,6 +13,9 @@ commands:
   forced:
     description: Forces Trample State
     usage: /<command> <player> <forcedState>
+  mobtrample:
+    description: Sets ability for mobs to trample
+    usage: /<command> <canTrample>
 permissions:
   farmfix.trample:
     description: Allows the ability to toggle trample mode if forced trample isn't toggled
@@ -20,12 +23,6 @@ permissions:
   farmfix.harvest:
     description: Allows the ability to harvest crops using left or right click
     default: true
-  farmfix.break:
-    description: Allows the ability to break crops
-    default: false
   farmfix.mod:
     description: Mod role for FarmFix
-    default: op
-  groups.farmfix.mod:
-    description: Mod Group for FarmFix
-    default: op
+    default: false
