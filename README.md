@@ -14,7 +14,17 @@ Seed drops are 1 seed + 50% chance to drop 1 additional one.
 
 There is a 5% chance that crops grow instantly
 
-Prevents circumvention using Pistons, Mobs, Liquids, and Trampling.
+Prevents circumvention using:
+
+Pistons (seed drop)
+
+Mobs (seed drop)
+
+Liquids (seed drop)
+
+Trampling (seed drop)
+
+Explosions (no drop)
 
 ## Fortune Behaviour
 
@@ -27,7 +37,6 @@ Unchanged from Vanilla
 ## Permissions
 ### Uses FarmPerms.java to manage permission behaviour
 
-
 farmfix.mod - Gives the ability to toggle other players trample/force set other players trample
 
 farmfix.trample - Allows self trample toggling behaviour
@@ -39,8 +48,10 @@ Help command for this plugin is /ff
 
 Players can toggle their own trample using /trample
 
-Mods can toggle other user's trample using /trample [playername] [state]
+Mods can toggle other user's trample using /trample [playername] [state] (Default false)
 
-Mods can force trample states for users ysubg /forced [playername] [state]
+Mods can force trample states for users using /forced [playername] [state] (Default false)
+
+Mods can toggle MOB trampling using /mobrample [state] -- (Default false)
 
 The [state] flag accepts "true" and "1" as true, all other values as false
