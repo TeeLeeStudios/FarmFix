@@ -1,10 +1,11 @@
 plugins {
     id 'java'
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    id 'com.gradleup.shadow' version '9.0.0-rc3'
+    id("xyz.jpenilla.run-paper") version '2.3.1'
 }
 
 group = 'dev.cheezboi9'
-version = '1.0-SNAPSHOT'
+version = '2.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -20,20 +21,13 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
+
     // Adventure APIs (MiniMessage and core)
     compileOnly("net.kyori:adventure-api:4.14.0")
     compileOnly("net.kyori:adventure-text-minimessage:4.14.0")
-    implementation(platform("org.mongodb:mongodb-driver-bom:5.5.1"))
-    implementation 'org.mongodb:mongodb-driver-sync'
-}
 
-tasks {
-    runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("1.21")
-    }
+    implementation platform("org.mongodb:mongodb-driver-bom:5.5.1")
+    implementation 'org.mongodb:mongodb-driver-sync'
 }
 
 def targetJavaVersion = 21
@@ -57,8 +51,33 @@ tasks.withType(JavaCompile).configureEach {
 processResources {
     def props = [version: version]
     inputs.properties props
-    filteringCharset 'UTF-8'
+    filteringCharset = 'UTF-8'
     filesMatching('plugin.yml') {
         expand props
+    }
+}
+
+import org.gradle.api.file.DuplicatesStrategy
+
+shadowJar {
+    archiveClassifier.set('all') // your fat-jar
+
+    // if any duplicates slip through, drop them
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    // drop all GraalVM native-image metadata
+    exclude 'META-INF/native-image/**'
+
+    // your existing relocations
+    relocate 'org.bson',    'dev.cheezboi9.farmfix.libs.org.bson'
+    relocate 'com.mongodb', 'dev.cheezboi9.farmfix.libs.com.mongodb'
+}
+
+tasks {
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion("1.21")
     }
 }
