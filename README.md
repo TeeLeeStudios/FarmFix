@@ -55,3 +55,7 @@ Mods can force trample states for users using /forced [playername] [state] (Defa
 Mods can toggle MOB trampling using /mobrample [state] -- (Default false)
 
 The [state] flag accepts "true" and "1" as true, all other values as false
+
+## Build Details
+
+Using Gradle ver. 9.0.0
