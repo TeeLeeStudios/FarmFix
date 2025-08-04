@@ -3,10 +3,7 @@ package dev.cheezboi9.farmfix;
 import dev.cheezboi9.farmfix.commands.ForcedCommand;
 import dev.cheezboi9.farmfix.commands.HelpCommand;
 import dev.cheezboi9.farmfix.commands.TrampleCommand;
-import dev.cheezboi9.farmfix.eventhandlers.CropBreakEventHandler;
-import dev.cheezboi9.farmfix.eventhandlers.EntityTrampleEventHandler;
-import dev.cheezboi9.farmfix.eventhandlers.FarmlandBreakHandler;
-import dev.cheezboi9.farmfix.eventhandlers.PistonEventHandler;
+import dev.cheezboi9.farmfix.eventhandlers.*;
 import dev.cheezboi9.farmfix.managers.TrampleManager;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -43,6 +40,7 @@ public final class FarmFix extends JavaPlugin {
     pluginManager.registerEvents(new PistonEventHandler(), this);
     pluginManager.registerEvents(new EntityTrampleEventHandler(), this);
     pluginManager.registerEvents(new FarmlandBreakHandler(), this);
+    pluginManager.registerEvents(new LiquidBreakEventHandler(), this);
   }
 
   public static TrampleManager getTrampleManager(){

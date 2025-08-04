@@ -4,6 +4,8 @@ import dev.cheezboi9.farmfix.FarmFix;
 import dev.cheezboi9.farmfix.managers.TrampleManager;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Mob;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -15,6 +17,12 @@ public class EntityTrampleEventHandler implements Listener {
   // Prevents trampling of farmland by mobs
   @EventHandler(ignoreCancelled = true)
   public void HandleEntityEvent(EntityChangeBlockEvent event) {
+
+    // Only affect mobs
+    Entity mob = event.getEntity();
+    if (!(mob instanceof Mob)){
+      return;
+    }
 
     Block farmland = event.getBlock();
     if (farmland.getType() == Material.FARMLAND) {

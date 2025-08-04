@@ -23,6 +23,8 @@ public class FarmlandBreakHandler implements Listener {
     boolean hasDirt = false;
     CropUtility.CropInfo matchedCrop = null;
 
+
+
     // Search for a valid crop while adding non-crops to a dropList
     for (Item item : items) {
       ItemStack itemStack = item.getItemStack();

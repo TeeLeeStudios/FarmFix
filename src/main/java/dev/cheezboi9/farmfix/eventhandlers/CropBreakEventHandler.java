@@ -5,7 +5,6 @@ import dev.cheezboi9.farmfix.FarmPerms;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,7 +32,6 @@ public class CropBreakEventHandler implements Listener {
   @EventHandler (ignoreCancelled = true)
   public void onCropBreak(BlockBreakEvent breakEvent) {
     Block block = breakEvent.getBlock();
-    BlockData data = block.getBlockData();
     Player player = breakEvent.getPlayer();
 
     // Farmland is handled by DropEventHandler
@@ -133,11 +131,20 @@ public class CropBreakEventHandler implements Listener {
     crop.getWorld().playSound(crop.getLocation(), Sound.ITEM_CROP_PLANT, 0.4f, 1.0f);
   }
 
-  private void handleTrample(PlayerInteractEvent event, Block crop) {
+  // Prevents trampling without perms, also prevents circumvention of drops
+  private void handleTrample(PlayerInteractEvent event, Block farmland) {
     Player player = event.getPlayer();
-    if (crop.getType() == Material.FARMLAND) {
+    if (farmland.getType() == Material.FARMLAND) {
+      // Can't trample so prevent trampling
       if (!FarmFix.getTrampleManager().canTrample(player.getUniqueId())) {
         event.setCancelled(true);
+        return;
+      }
+
+      Block crop = farmland.getWorld().getBlockAt(farmland.getLocation().add(0,1,0));
+      // Drop only the seed while we preserve standard farmland trample behaviour
+      if (CropUtility.dropSeed(crop)) {
+        crop.setType(Material.AIR);
       }
     }
   }
