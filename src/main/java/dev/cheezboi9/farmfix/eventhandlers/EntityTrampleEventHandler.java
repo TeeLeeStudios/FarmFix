@@ -20,22 +20,19 @@ public class EntityTrampleEventHandler implements Listener {
     if (farmland.getType() == Material.FARMLAND) {
       event.setCancelled(true);
       Block crop = farmland.getWorld().getBlockAt(farmland.getLocation().add(0,1,0));
-      if (crop.getType() == Material.AIR) {
+
+      // Allow vanilla trampling if crop is not supported
+      if (CropUtility.notCrop(crop)) {
         return;
       }
       // Only allow if mobs are allowed to trample
       if (!trampleManager.canMobTrample()) {
         return;
       }
-      CropUtility.CropInfo cropInfo = CropUtility.CropInfo.fromCropBlock(crop.getType());
-      if (cropInfo == null) {
-        return;
-      }
 
-      CropUtility.dropSeed(crop, cropInfo);
+      CropUtility.dropSeed(crop);
       crop.setType(Material.AIR);
       farmland.setType(Material.DIRT);
-
     }
   }
 

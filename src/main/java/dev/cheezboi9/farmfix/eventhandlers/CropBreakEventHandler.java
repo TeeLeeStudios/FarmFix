@@ -41,18 +41,18 @@ public class CropBreakEventHandler implements Listener {
       return;
     }
 
-    if (data instanceof Ageable) {
-      CropUtility.CropInfo cropInfo = CropUtility.CropInfo.fromCropBlock(block.getType());
-      if (cropInfo == null) { // Crop doesn't exist so default to vanilla behaviour
-        return;
-      }
-      // Disable default drop behaviour
-      breakEvent.setDropItems(false);
-      // Don't drop seeds if in creative, otherwise drop 1 seed
-      if (player.getGameMode() != GameMode.CREATIVE) {
-        CropUtility.dropSeed(block, cropInfo);
-      }
+    // Crop doesn't exist so default to vanilla behaviour
+    if (CropUtility.notCrop(block)) {
+      return;
     }
+
+    // Disable default drop behaviour
+    breakEvent.setDropItems(false);
+    // Don't drop seeds if in creative, otherwise drop 1 seed
+    if (player.getGameMode() != GameMode.CREATIVE) {
+      CropUtility.dropSeed(block);
+    }
+
   }
 
   /**
@@ -61,8 +61,8 @@ public class CropBreakEventHandler implements Listener {
   @EventHandler (ignoreCancelled = true)
   public void onCropHarvest(PlayerInteractEvent interactEvent) {
     Block block = interactEvent.getClickedBlock();
-    // Early return for non-crops or non-farmlands. Surprisingly, BlockData: Ageable does not apply to copper blocks
-    if (block == null || (!(block.getBlockData() instanceof Ageable) && block.getType() != Material.FARMLAND)) {
+    // Early return for non-crops or non-farmlands.
+    if (block == null || (CropUtility.notCrop(block) && block.getType() != Material.FARMLAND)) {
       return;
     }
 
@@ -79,8 +79,8 @@ public class CropBreakEventHandler implements Listener {
     Player player = event.getPlayer();
     ItemStack heldItem = player.getInventory().getItemInMainHand();
 
-    // Early returns so that the crop block is actually a crop, and we're using a hoe
-    if (!(crop.getBlockData() instanceof Ageable ageable)) {
+    // Early returns so that the crop block is actually a supported crop, and we're using a hoe
+    if (!(crop.getBlockData() instanceof Ageable ageable) || CropUtility.notCrop(crop)) {
       return;
     }
     // Bone meal behaviour should not be affected

@@ -43,7 +43,7 @@ public class FarmlandBreakHandler implements Listener {
       return;
     }
 
-    // If player is not breaking dirt, default to vanilla drop behaviour
+    // If player is not breaking dirt with a valid crop also being dropped, default to vanilla drop behaviour
     if (!hasDirt) {
       return;
     }

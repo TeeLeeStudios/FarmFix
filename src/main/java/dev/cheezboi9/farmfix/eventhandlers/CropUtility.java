@@ -60,7 +60,12 @@ public class CropUtility {
     }
   }
 
-  public static void dropSeed(Block crop, CropInfo cropInfo) {
+  public static boolean dropSeed(Block crop) {
+    CropInfo cropInfo = CropInfo.fromCropBlock(crop.getType());
+    // Return for unsupported crops
+    if (cropInfo == null) {
+      return false;
+    }
     Material seed = cropInfo.getSeedDrop();
 
     // Found this to be much cleaner than an if statement to check null case
@@ -68,6 +73,11 @@ public class CropUtility {
         crop.getLocation(),
         ItemStack.of(Objects.requireNonNullElseGet(seed, cropInfo::getCropDrop), 1));
     crop.getWorld().playSound(crop.getLocation(), Sound.ITEM_CROP_PLANT, 0.4f, 1.0f);
+    return true;
+  }
+
+  public static boolean notCrop(Block crop) {
+    return (CropInfo.fromCropBlock(crop.getType()) == null);
   }
 
 }
