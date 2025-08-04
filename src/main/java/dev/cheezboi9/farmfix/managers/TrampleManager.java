@@ -6,11 +6,9 @@ import java.util.UUID;
 
 public class TrampleManager {
 
-  // Appends FarmFix to our logs which is easier to debug later
-
   private boolean mobTrample = false;
 
-
+  // Only saves non-default values
   public void toggleTrample(UUID uuid, boolean state) {
     if (state) {
       FarmFix.getDatabaseManager().upsertTrample(uuid);
@@ -19,6 +17,7 @@ public class TrampleManager {
     }
   }
 
+  // Only saves non-default values
   public void forceTrample(UUID uuid, boolean state) {
     if (state) {
       FarmFix.getDatabaseManager().upsertForced(uuid);
@@ -35,7 +34,7 @@ public class TrampleManager {
     return FarmFix.getDatabaseManager().getTrampleState(uuid);
   }
 
-  public void setMobTrample (boolean state) {
+  public void setMobTrample(boolean state) {
     this.mobTrample = state;
   }
 
