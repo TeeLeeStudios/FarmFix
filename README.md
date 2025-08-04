@@ -5,7 +5,7 @@ Paper/Spigot plugin for Minecraft 1.21.1 that changes how crops are interacted w
  
 WOODEN_HOE, STONE_HOE -> 1 Crop
 
-IRON_HOE -> 2 Crops
+IRON_HOE, GOLD_HOE -> 2 Crops
 
 DIAMOND_HOE, NETHERITE_HOE -> 3 Crops
 
