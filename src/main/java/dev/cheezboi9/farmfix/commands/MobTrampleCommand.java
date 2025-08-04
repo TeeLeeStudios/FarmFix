@@ -23,6 +23,9 @@ public class MobTrampleCommand implements CommandExecutor {
       boolean mobsCanTrample = args[0].equalsIgnoreCase("true") || args[0].equalsIgnoreCase("1");
       FarmFix.getTrampleManager().setMobTrample(mobsCanTrample);
     }
+    else {
+      commandSender.sendMessage("You do not have permission to set this!");
+    }
     return true;
   }
 }
