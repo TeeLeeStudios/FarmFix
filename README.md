@@ -14,7 +14,7 @@ Seed drops are 1 seed + 50% chance to drop 1 additional one.
 
 There is a 5% chance that crops grow instantly
 
-Prevents circumvention using:
+### Prevents circumvention using:
 
 Pistons (seed drop)
 
