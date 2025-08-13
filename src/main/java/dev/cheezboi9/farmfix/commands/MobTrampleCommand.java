@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import org.jetbrains.annotations.NotNull;
 
+// Allows mods to toggle serverwide mob trample behaviour
 public class MobTrampleCommand implements CommandExecutor {
 
   @Override
