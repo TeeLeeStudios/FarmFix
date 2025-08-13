@@ -68,7 +68,7 @@ shadowJar {
     // drop all GraalVM native-image metadata
     exclude 'META-INF/native-image/**'
 
-    // your existing relocations
+    // existing relocations
     relocate 'org.bson',    'dev.cheezboi9.farmfix.libs.org.bson'
     relocate 'com.mongodb', 'dev.cheezboi9.farmfix.libs.com.mongodb'
 }
