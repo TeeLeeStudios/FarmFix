@@ -42,6 +42,9 @@ public class DatabaseManager implements AutoCloseable{
     collection.updateOne(filter,update);
   }
 
+  /**
+   * Removes the forced flag on the player
+   */
   public void removeForced(UUID uuid) {
    Document filter = new Document("UUID", uuid.toString());
    Document update = new Document("$unset", new Document().append("Forced", ""));
