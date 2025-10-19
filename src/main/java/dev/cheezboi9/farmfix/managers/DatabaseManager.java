@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class DatabaseManager implements AutoCloseable{
   // MongoDB connection string
-  private final static String URI = "mongodb+srv://<Ask Cheezboi9>@cheezenvironment.2apl6re.mongodb.net/?retryWrites=true&w=majority&appName=CheezEnvironment";
+  private final static String URI = "";
   private final MongoClient mongoClient;
   private final MongoCollection<Document> collection;
 
@@ -58,6 +58,9 @@ public class DatabaseManager implements AutoCloseable{
     return getDoc.getBoolean("Trample", false);
   }
 
+  /**
+   *  Gets the current forced state of the player
+    */
   public boolean getForcedState(UUID uuid) {
     Document filter = new Document("UUID", uuid.toString());
     Document getDoc = collection.find(filter).first();
