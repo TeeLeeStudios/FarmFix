@@ -34,7 +34,9 @@ public class DatabaseManager implements AutoCloseable{
     collection.updateOne(filter, update, new UpdateOptions().upsert(true));
   }
 
-
+  /**
+   * Removes the ability to trample for the player
+   */
   public void removeTrample(UUID uuid) {
     Document filter = new Document("UUID", uuid.toString());
     Document update = new Document("$unset", new Document().append("Trample", ""));
