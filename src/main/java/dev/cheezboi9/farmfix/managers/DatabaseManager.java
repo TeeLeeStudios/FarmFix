@@ -49,6 +49,9 @@ public class DatabaseManager implements AutoCloseable{
    collection.updateOne(filter,update);
   }
 
+  /**
+   * Gets the trample state of the player
+   */
   public boolean getTrampleState(UUID uuid) {
     Document filter = new Document("UUID", uuid.toString());
     Document getDoc = collection.find(filter).first();
