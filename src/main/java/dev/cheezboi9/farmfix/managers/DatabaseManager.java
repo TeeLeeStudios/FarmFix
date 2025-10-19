@@ -7,7 +7,9 @@ import org.bson.Document;
 import java.util.UUID;
 
 public class DatabaseManager implements AutoCloseable{
-  // MongoDB connection string
+  /**
+   * MongoDB connection string
+   */
   private final static String URI = "";
   private final MongoClient mongoClient;
   private final MongoCollection<Document> collection;
@@ -20,14 +22,18 @@ public class DatabaseManager implements AutoCloseable{
     this.collection.createIndex(new Document("UUID", 1));
   }
 
-  // Setting trample to true
+  /**
+   * Setting trample to true
+   */
   public void upsertTrample (UUID uuid) {
     Document filter = new Document("UUID", uuid.toString());
     Document update = new Document("$set", new Document().append("Trample", true));
     collection.updateOne(filter, update, new UpdateOptions().upsert(true));
   }
 
-  // Setting Forced to true
+  /**
+   * Sets Forced to true
+   */
   public void upsertForced(UUID uuid) {
     Document filter = new Document("UUID", uuid.toString());
     Document update = new Document("$set", new Document().append("Forced", true));
